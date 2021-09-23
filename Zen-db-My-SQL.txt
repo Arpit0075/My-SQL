@@ -1,0 +1,184 @@
+/* The Following are the tables has to be in your database & model deisgn:
+users
+codekata
+attendance
+topics
+tasks
+company_drives
+mentors
+students_activated_courses
+courses
+
+The following are the queries need to be executed
+
+1. Create tables for the above list given
+2. insert at least 5 rows of values in each table
+3. get number problems solved in codekata by combining the users
+4. display the no of company drives attended by a user
+5. combine and display students_activated_courses and courses for a specific user groping them based on the course
+6. list all the mentors
+7. list the number of students that are assigned for a mentor */
+
+
+-- answer here 
+
+-- creating table mentors and inserting values
+
+CREATE TABLE mentors(mentorId INTEGER, name VARCHAR, email VARCHAR);
+INSERT INTO mentors (mentorId, name, email) VALUES (1,"Rohan", "rohan@gmail.com");
+INSERT INTO mentors (mentorId, name, email) VALUES (2,"Roshan", "roshan@gmail.com");
+INSERT INTO mentors (mentorId, name, email) VALUES (3,"Ravi", "ravi@gmail.com");
+
+
+-- creating user table and insert values
+
+CREATE TABLE users(userId INTEGER, name VARCHAR, email VARCHAR , mentor VARCHAR);
+INSERT INTO users(userId ,name, email,mentor ) SELECT 1, "Roy","roy@gmail.com", name FROM mentors where mentorId=1;
+INSERT INTO users(userId ,name, email,mentor ) SELECT 2, "Ram", "ram@gmail.com" , name FROM mentors where mentorId=2;
+INSERT INTO users(userId ,name, email ,mentor) SELECT 3, "John", "john@gmail.com", name FROM mentors where mentorId=3; 
+INSERT INTO users(userId ,name, email,mentor ) SELECT 4, "Zoro", "zoro@gmail.com", name FROM mentors where mentorId=2;
+INSERT INTO users(userId ,name, email,mentor ) SELECT 5, "Reema", "reema@gmail.com", name FROM mentors where mentorId=3;
+
+/* inserting values from another table based on condition and additon additional values */
+
+CREATE TABLE attendence(userId INTEGER,name VARCHAR, email VARCHAR ,isPresent BOOLEAN ,Date DATE);
+INSERT INTO attendence(userId,name,email,isPresent,Date) SELECT userId,name,email,"true","13/09/87" FROM users where userId=1;
+INSERT INTO attendence(userId,name,email,isPresent,Date) SELECT userId,name,email,"true","13/09/87" FROM users where userId=2;
+INSERT INTO attendence(userId,name,email,isPresent,Date) SELECT userId,name,email,"false","13/09/87" FROM users where userId=3;
+INSERT INTO attendence(userId,name,email,isPresent,Date) SELECT userId,name,email,"true","13/09/87" FROM users where userId=4;
+INSERT INTO attendence(userId,name,email,isPresent,Date) SELECT userId,name,email,"true","13/09/87" FROM users where userId=5;
+
+-- creating table tasks
+
+CREATE TABLE tasks(taskId INTEGER, question VARCHAR);
+INSERT INTO tasks(taskId, question) VALUES (1,"What is Html?");
+INSERT INTO tasks(taskId, question) VALUES (2,"What is Css?");
+INSERT INTO tasks(taskId, question) VALUES (3,"What is Javascript?");
+INSERT INTO tasks(taskId, question) VALUES (4,"What are Forms?");
+INSERT INTO tasks(taskId, question) VALUES (5,"What are heading tags?");
+INSERT INTO tasks(taskId, question) VALUES (6,"Write a fucntion to add two numbers");
+INSERT INTO tasks(taskId, question) VALUES (7,"Write a fucntion to multiply two numbers");
+INSERT INTO tasks(taskId, question) VALUES (8,"Write a fucntion to divide two numbers");
+
+-- creating table topics
+
+CREATE TABLE topics( topicId INTEGER, topicName VARCHAR);
+INSERT INTO topics(topicId, topicName) VALUES (1, "Html");
+INSERT INTO topics(topicId, topicName) VALUES (2, "CSS");
+INSERT INTO topics(topicId, topicName) VALUES (3,"Javascript");
+
+
+/* creating table codekata and inserting values from users and tasks table */
+CREATE TABLE codekata(userId INTEGER, name VARCHAR,email VARCHAR,
+question1 VARCHAR, isSolved1 INTEGER,
+question2 VARCHAR, isSolved2 INTEGER,question3 VARCHAR, isSolved3 INTEGER);
+
+/* inserting values from 2 different tables into new table */
+
+INSERT INTO codekata(userId, name, email, question1,isSolved1, 
+question2,isSolved2,question3,isSolved3) 
+SELECT (SELECT userId from users where userId=1), 
+(SELECT name from users where userId=1),
+(SELECT email from users where userId=1),
+(SELECT question from tasks where taskId=1),1,
+(SELECT question from tasks where taskId=2),1,
+(SELECT question from tasks where taskId=3),0;
+
+
+INSERT INTO codekata(userId, name, email, 
+question1,isSolved1, question2,isSolved2,question3,isSolved3)
+SELECT (SELECT userId from users where userId=2),
+(SELECT name from users where userId=2),
+(SELECT email from users where userId=2),
+(SELECT question from tasks where taskId=2),0,
+(SELECT question from tasks where taskId=3),1,
+(SELECT question from tasks where taskId=4),1;
+
+INSERT INTO codekata(userId, name, email, question1,isSolved1, 
+question2,isSolved2,question3,isSolved3) SELECT
+(SELECT userId from users where userId=3), 
+(SELECT name from users where userId=3),
+(SELECT email from users where userId=3),
+(SELECT question from tasks where taskId=4),0,
+(SELECT question from tasks where taskId=5),1,
+(SELECT question from tasks where taskId=6),1;
+
+INSERT INTO codekata(userId, name, email, question1,isSolved1, 
+question2,isSolved2,question3,isSolved3) SELECT 
+(SELECT userId from users where userId=4), 
+(SELECT name from users where userId=4),
+(SELECT email from users where userId=4),
+(SELECT question from tasks where taskId=6),1,
+(SELECT question from tasks where taskId=7),0,
+(SELECT question from tasks where taskId=8),1;
+
+INSERT INTO codekata(userId, name, email, question1,isSolved1, 
+question2,isSolved2,question3,isSolved3) SELECT 
+(SELECT userId from users where userId=5), 
+(SELECT name from users where userId=5),
+(SELECT email from users where userId=5),
+(SELECT question from tasks where taskId=3),1,
+(SELECT question from tasks where taskId=4),1,
+(SELECT question from tasks where taskId=5),1;
+	
+
+-- creating table company_drives
+
+CREATE TABLE company_drives(SerialNo INTEGER, date DATE,attendeesName1 VARCHAR,attendeesName2 VARCHAR,attendeesName3 VARCHAR,attendeesName4 VARCHAR);
+
+INSERT into company_drives(SerialNo, date, attendeesName1,attendeesName2,attendeesName3,attendeesName4) 
+SELECT 1, "16/09/20" , (SELECT name FROM users where userId=1) ,(SELECT name FROM users where userId=2),
+(SELECT name FROM users where userId=3),(SELECT name FROM users where userId=4);
+
+INSERT into company_drives(SerialNo, date, attendeesName1,attendeesName2,attendeesName3,attendeesName4) 
+SELECT 2, "21/10/20" , (SELECT name FROM users where userId=1) ,(SELECT name FROM users where userId=2),
+(SELECT name FROM users where userId=5),(SELECT name FROM users where userId=4);
+
+INSERT into company_drives(SerialNo, date, attendeesName1,attendeesName2,attendeesName3,attendeesName4) 
+SELECT 3, "25/12/20" , (SELECT name FROM users where userId=5) ,(SELECT name FROM users where userId=2),
+(SELECT name FROM users where userId=3),(SELECT name FROM users where userId=4);
+
+INSERT into company_drives(SerialNo, date, attendeesName1,attendeesName2,attendeesName3,attendeesName4) 
+SELECT 4, "5/02/21" , (SELECT name FROM users where userId=2) ,(SELECT name FROM users where userId=5),
+(SELECT name FROM users where userId=3),(SELECT name FROM users where userId=4);
+
+INSERT into company_drives(SerialNo, date, attendeesName1,attendeesName2,attendeesName3,attendeesName4) 
+SELECT 5, "16/03/88" , (SELECT name FROM users where userId=1) ,(SELECT name FROM users where userId=2),
+(SELECT name FROM users where userId=3),(SELECT name FROM users where userId=4);
+
+-- creating table courses and inserting
+CREATE TABLE courses(courseId INTEGER, courseName VARCHAR);
+INSERT INTO courses(courseId, courseName) VALUES (1,"Web Devlopement");
+INSERT INTO courses(courseId, courseName) VALUES (2,"Data science"); 
+INSERT INTO courses(courseId, courseName) VALUES (3,"Ethical Hacking"); 
+INSERT INTO courses(courseId, courseName) VALUES (4,"Machine Learning"); 
+
+-- creating table student_activated_courses and inserting
+
+CREATE TABLE students_activated_courses(courseId INTEGER, courseName VARCHAR, studentName VARCHAR, studentId INTEGER ,studentEmail VARCHAR);
+INSERT INTO students_activated_courses(courseId, courseName, studentName, studentId, studentEmail) SELECT courses.courseId, courses.courseName, users.name, users.userId, users.email
+ FROM courses, users where courses.courseId=1 AND users.userId=1;
+INSERT INTO students_activated_courses(courseId, courseName, studentName, studentId, studentEmail) SELECT courses.courseId, courses.courseName, users.name, users.userId, users.email
+ FROM courses, users where courses.courseId=2 AND users.userId=2;
+INSERT INTO students_activated_courses(courseId, courseName, studentName, studentId, studentEmail) SELECT courses.courseId, courses.courseName, users.name, users.userId, users.email
+ FROM courses, users where courses.courseId=3 AND users.userId=3;
+INSERT INTO students_activated_courses(courseId, courseName, studentName, studentId, studentEmail) SELECT courses.courseId, courses.courseName, users.name, users.userId, users.email
+ FROM courses, users where courses.courseId=4 AND users.userId=4;
+INSERT INTO students_activated_courses(courseId, courseName, studentName, studentId, studentEmail) SELECT courses.courseId, courses.courseName, users.name, users.userId, users.email
+ FROM courses, users where courses.courseId=4 AND users.userId=5;
+
+
+-- get number problems solved in codekata by combining the users
+SELECT SUM(isSolved1+isSolved2+isSolved3) from codekata;
+
+-- count company drives attended by a user
+SELECT COUNT(*) FROM company_drives where attendeesName1="Roy" OR attendeesName2="Roy" OR attendeesName3="Roy" OR attendeesName4="Roy";
+
+-- list all mentor names
+SELECT name from mentors;
+
+-- list the number of students that are assigned for a mentor
+SELECT COUNT(*) FROM users where mentor= "Ravi";
+
+/* combine and display students_activated_courses and courses for a specific user groping them based on the course */
+SELECT courseName, studentName FROM students_activated_courses GROUP BY courseName,studentName;
